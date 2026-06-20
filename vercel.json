@@ -1,7 +1,6 @@
 {
   "functions": {
     "api/idx.js": {
-      "runtime": "nodejs24.x",
       "maxDuration": 30
     }
   }
