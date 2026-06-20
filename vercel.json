@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/idx.js": {
-      "maxDuration": 30
-    }
-  }
-}
