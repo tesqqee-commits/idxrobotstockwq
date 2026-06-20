@@ -18,7 +18,7 @@ async function main() {
   requireEnv("TELEGRAM_CHAT_ID");
 
   const testMode = process.argv.includes("--test");
-  const html = await fetchWithCurl(IDX_DISCLOSURE_URL);
+  const html = await fetchIdxHtml(IDX_DISCLOSURE_URL);
   let items = parseIdxDisclosures(html);
 
   if (!testMode) {
@@ -60,6 +60,15 @@ function requireEnv(name) {
   }
 }
 
+async function fetchIdxHtml(url) {
+  try {
+    return await fetchWithCurl(url);
+  } catch (curlError) {
+    console.log("curl fetch failed:", curlError.message);
+    return await fetchWithNode(url);
+  }
+}
+
 function fetchWithCurl(url) {
   return new Promise((resolve, reject) => {
     execFile(
@@ -84,6 +93,25 @@ function fetchWithCurl(url) {
       }
     );
   });
+}
+
+async function fetchWithNode(url) {
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.7",
+      "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
+      "Referer": "https://www.idx.co.id/"
+    }
+  });
+
+  if (!res.ok) {
+    throw new Error("HTTP " + res.status);
+  }
+
+  return await res.text();
 }
 
 function loadSentKeys() {
